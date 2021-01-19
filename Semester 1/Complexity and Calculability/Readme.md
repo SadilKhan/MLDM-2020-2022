@@ -29,4 +29,6 @@ Some of the reduction I have studied.
 2. [P vs NP - Biggest unsolved question.](https://www.youtube.com/watch?v=EHp4FPyajKQ&t=305s)
 3. [Np-Complete reductions.](https://www.youtube.com/watch?v=YaISY44tCIM&t=519s)
 4. [Some reductions and Np Completeness](https://www.cs.cmu.edu/~ckingsf/bioinfo-lectures/npcomplete.pdf)
-5. 
+
+
+If you need any help regarding this awesome course, feel free to reach me.
