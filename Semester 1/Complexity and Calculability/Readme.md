@@ -8,7 +8,7 @@ But you can score pretty good on the second test. In the second test, there is o
 The main topic of the exam is to prove that the given problem A is NP-Complete. Now to prove that a decision problem A is NP-Complete. You need to prove two things.
 
 1. A is NP-Hard ( By showing that the a known NP-Hard problem B can be reduced polynomially to A. Means if we ever find the solution of B in polynomial time, we can find the solution of A also in polynomial time and vice-versa)
-2. A is in NP ( This is actually 2-3 lines proof). To prove that a problem is in NP, just take an example and say how polynomially you can verify whether it's a solution of the problem or not. For example, you can't write a code which solves Suduku in polynomial time but if I give you a filled suduku problem , you can verify whether the filled example is actually a valid suduku solution or not. This is what you need to write in mathematical way.
+2. A is in NP ( This is actually 2-3 lines proof). To prove that a problem is in NP, just take an example and say how polynomially you can verify whether it's a solution of the problem or not. For example, you can't write a code which solves Suduku in polynomial time but if I give you a filled suduku problem , you can verify whether the filled example is actually a valid suduku solution or not in polynomial time. Simple as that. This is what you need to write in mathematical way.
 
 Your main way of proceeding towards this course is to learn reduction (Remember: Professor will already tell you what to reduce and even how to reduce).
 Some of the reduction I have studied.
@@ -19,8 +19,8 @@ Some of the reduction I have studied.
 5. 3-SAT to VERTEX COVER  
 6. 3-SAT to GRAPH K COLORABILITY
 7. 3-SAT to NAESAT
-8. 3-SAT to DOMINATING SET
-9. 3-SAT to NAE-4-SET
+8. [3-SAT to DOMINATING SET](https://www.nitt.edu/home/academics/departments/cse/faculty/kvi/NPC%20DOMINATING%20SET.pdf)
+9. [3-SAT to NAE-4-SET](http://www.cs.cmu.edu/afs/cs/academic/class/15750-s17/ScribeNotes/lecture37.pdf)
 10. NAE-4-SAT to NAE-3-SAT
 
 # Recommended Online Study
@@ -28,4 +28,5 @@ Some of the reduction I have studied.
 1. [CS 5371.](http://www.cs.nthu.edu.tw/~wkhon/toc07.html)
 2. [P vs NP - Biggest unsolved question.](https://www.youtube.com/watch?v=EHp4FPyajKQ&t=305s)
 3. [Np-Complete reductions.](https://www.youtube.com/watch?v=YaISY44tCIM&t=519s)
-4. 
+4. [Some reductions and Np Completeness](https://www.cs.cmu.edu/~ckingsf/bioinfo-lectures/npcomplete.pdf)
+5. 
