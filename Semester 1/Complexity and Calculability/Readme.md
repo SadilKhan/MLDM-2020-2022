@@ -1,3 +1,4 @@
+# My Approach
 This is the course which is the actually the most feared and discussed course in first semester. You will see plenty of people getting scared of this course. 
 But this is truly the most beautiful course of all. You will definitely fall in love with this course once you understand this. It's really easy to score in exam. Many people got 20 out of 20. I myself got it despite having no CS background.
 To be honest, there was no middle ground in this course during my time. People either failed or achieved 17-20. Follow my suggested guidlines, you shall do good by God's grace.
