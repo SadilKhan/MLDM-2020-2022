@@ -8,6 +8,7 @@ Here, you’ll discover my journey through the master’s program, along with **
 
 ## 🛠️ Updates & Contributions
 
+- **📅 Mar 30, 2025:** Huge Thanks to [patbarry29](https://github.com/patbarry29) for contributing new **Semester 2 Exam Papers**! 📝✨  
 - **📅 Jan 16, 2025:** Huge Thanks to [patbarry29](https://github.com/patbarry29) for contributing new **Semester 1 Exam Papers**! 📝✨  
 
 ---
