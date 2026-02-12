@@ -1,0 +1,174 @@
+********************************************************************************
+********* Practical Session 3: Datamining For Big Data *************************
+********************************************************************************
+
+The text files used in this practical session are available as an archive on Moodle.
+
+You need to complete this file with your answers and upload it in the "M2
+ Big data (BIG DATA)" course on moodle.
+
+Do not modify or remove lines starting with stars "****". I use them to extract your name and answers.
+Write your answers only between lines "******* answer X.X" and "******* end answer X.X".
+
+****** Fill in your name on the next line  (do not modify or remove this line)
+Patrick Barry
+****** end name (do not modify or remove this line)
+
+
+********************************************************************************
+*********** Part IV: Matrix Operations
+********************************************************************************
+
+In this part, you will compute several operations on matrix / vectors.
+
+Some definitions:
+- The sum of two vectors V = (V1,...,Vn) and W = (W1,...,Wn) is the vector
+  V+W =(V1+W1, V2+W2, ..., Vn+Wn)
+
+- The dot product of two vectors V = (V1,...,Vn) and W = (W1,...,Wn) is:
+  V.W =  V1*W1 + V2*W2 + ... + Vn*Wn
+
+- The L2 norm of a vector V is:
+  norm(V) = sqrt(V.V) = sqrt( V1*V1 + V2*V2 + ... + Vn*Vn)
+
+- The product of a matrix M and a vector V is:
+  W = M.V with Wi = M[i,.] * V = sum_j M[i,j].Vj
+  (the ith component of W is the dot product between the ith row of M and V).
+
+******* Sparse representation of matrix and vectors ********************
+
+Examples of matrix and vectors are stored in files M.txt, V.txt and W.txt (in data/ directory).
+They use a sparse coding.
+For a vector X (like V and W), it means that each line of X.txt has the form:
+"i X[i]"
+where i is the row number and X[i] the value of X in at row i.
+For instance, if X is vector [0, 1.3, 0, 2, 4, 0, 0, 1.1], it is represented by a file:
+"2 1.3
+4 2
+5 4
+8 1.1"
+
+We want to represent this vector by a RDD consisting of pairs (i,X[i]), so
+X would be represented by a RDD :
+[(2, 1.3), (4, 2.0), (5, 4.0),...]
+
+Notice that a vector with more 0s at the end like [0, 1.3, 0, 2, 4, 0, 0, 1.1, 0, 0, 0, 0]
+has exactly the same representation (since we only store non-zero values).
+
+For a matrix, each line of M.txt has the form:
+"i j M[i,j]"
+where i is the row number, j the column number and M[i,j] the value in matrix M at row i column j.
+Only the non zero values M[i,j] are stored in the file.
+
+For instance, if M is the 3x3 matrix:
+    0   5.3 0
+M = 6.2 0   0
+    0   0   0
+it can be represented by a file with two lines (since there are only two non-zero values):
+"1 2 5.3
+2 1 6.2"
+And the corresponding RDD would be
+[(1, 2, 5.3), (2, 1, 6.2)]
+
+
+******** Questions ****************************************************
+
+During session 2, you should have:
+
+1) constructed three RDDs V, W and M that represent vectors of the
+files V.txt and W.txt and the matrix in M.txt using the sparse
+representation explained above. You will need these RDDs
+in the following questions.
+
+2) Computed the L2 norm of a vector V:  norm(V) = sqrt(V1*V1 + V2*V2 + ... +Vn*Vn)
+from RDD V.
+
+3) Computed the sum of two vector: U = V + W.  The vector U must be a RDD
+using the sparse representation.
+
+
+**** New questions:
+
+4) We want to compute the dot product of two vectors
+V.W = V1.W1 + V2.W2 + ... + Vn.Wn
+
+To this aim, you can use the "join" operation between the RDDs V and W
+to group coordinates (ie, V1 with W1, V2 with W2, ...). Then compute the
+dot product. (recall that if a value is not present in the rdd, it should
+be interpreted as 0.0).
+
+******* answer 4.4: do not modify or remove this line
+   V.join(W).map(lambda x: (x[1][0]*x[1][1])).sum()
+******* end answer 4.4: do not modify or remove this line
+
+
+
+Now, we want to compute the matrix vector product T = M.V (M is a matrix and V is a vector).
+The matrix M and the vectors V and T must be represented in a RDD using a sparse coding.
+
+5) First, build a RDD which contains all the (non zero) products of
+the form M[i,j].Vj for all i and j. (you can use the "join" operation
+on RDDs). Your RDD may also contains other information such as row
+and/or column numbers.
+
+******* answer 4.5: do not modify or remove this line
+   def f1(x):
+      return ((x[1][0][0], x[0]), x[1][0][1]*x[1][1])
+
+   join_by_j = M.map(lambda x: (x[1],(x[0], x[2]))).join(V)
+   join_by_j = join_by_j.map(f1).sortByKey()
+   join_by_j.collect()
+******* end answer 4.5: do not modify or remove this line
+
+6) From the previous RDD, build the RDD which contains the vector
+T=M.V. Recall that zero values must not appear in this RDD.
+******* answer 4.6: do not modify or remove this line
+   join_by_j.map(lambda x: (x[0][0], x[1])).reduceByKey(lambda a,b: a+b).sortByKey().collect()
+******* end answer 4.6: do not modify or remove this line
+
+7) (optional) write a program that computes the largest eigenvalue of matrix M.
+
+One possible algorithm is the power iteration method:
+Start from a random vector V_0 and compute the two sequences of vectors V_1, V_2 .... and NV_1, NV_2 ...
+(each V_i and each NV_i is a vector represented in a RDD)
+
+NV_i = V_i/norm(V_i)  # normalize vector V_i (divide each component of V_i by the norm of V_i)
+V_(i+1) = M.NV_i      # compute new vector V_(i+1)
+
+Then the dot product
+l = V_(i+1).NV_i
+will converge towards the eigenvalue of M with the largest norm when i goes to infinity.
+You can print the l value at each iteration to see the convergence.
+
+******* answer 4.7: do not modify or remove this line
+   Replace by your answer
+******* end answer 4.7: do not modify or remove this line
+
+If you want to write a standalone program, copy the following code in a file eigen.py
+and start it by:
+If you use university computers:
+   /home/jeudbapt/local/spark-3.5.0-bin-hadoop3/bin/spark-submit eigen.py
+  or
+   /home/jeudbapt/local/spark-3.5.0-bin-hadoop3/bin/spark-submit eigen.py 2> /dev/null
+  to completely avoid any messages from spark.
+If you use your computer:
+   <PATH_TO_SPARK_INSTAL>/bin/spark-submit eigen.py
+You have to replace <PATH_TO_SPARK_INSTAL> by the path of your spark installation.
+
+############################################### start of file eigen.py
+from pyspark import SparkContext, SparkConf
+
+# To start this spark program:
+# <PATH_TO_SPARK_INSTAL>/bin/spark-submit eigen.py
+
+#### Create the Spark Context and start Spark:
+myconf = SparkConf().setAppName("eigenvalue")
+sc = SparkContext(conf=myconf)
+sc.setLogLevel("WARN") # to avoid too many messages
+#### Spark context created.
+
+# write your code here:
+
+# stop Spark:
+sc.stop()
+############################################### end of file eigen.py
