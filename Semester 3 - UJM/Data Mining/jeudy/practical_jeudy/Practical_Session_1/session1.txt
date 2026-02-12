@@ -1,0 +1,168 @@
+********************************************************************************
+********* Practical Session 1: Datamining For Big Data *************************
+********************************************************************************
+
+You need to complete this file with your answers and upload it in the "Big data" course on Moodle.
+
+Do not modify or remove lines starting with stars "****". I use them to extract your name and answers.
+Write your answers only between lines "******* answer X.X" and "******* end answer X.X".
+
+****** Fill in your name on the next line  (do not modify or remove this line)
+
+****** end name (do not modify or remove this line)
+
+
+The aim of this session is to practice with the spark framework.
+You will use the interactive pyspark shell.
+
+1- Except for the questions of part I, you should copy in this file
+   the code that you type in the interactive shell.
+
+2- At the end of the session, upload this file on
+   Moodle.
+
+3- If you have not finished at the end of the session, you can
+   continue at home and upload another version later (but in this
+   case, do not remove your first version).
+
+
+********************************************************************************
+*****************  Part I
+********************************************************************************
+
+1) Go on the quick start page of Spark version 2.0 (if you followed instructions
+in "instruction.pdf", this page should already be open.):
+https://archive.apache.org/dist/spark/docs/2.0.0/quick-start.html
+Code examples are either in Python or Scala, select "Python".
+Do the "Basic" part on the "lotr.txt" text file (this text file is in data directory of the zip file).
+For the filter transformation, use the word "Bilbo" instead of "Spark".
+
+2) Do the "more on RDD" operations using again the "lotr.txt" text file.
+The goal is to understand what happens, not just copy/paste the code!
+
+
+********************************************************************************
+************************* IMPORTANT ********************************************
+********************************************************************************
+
+For the next questions, you have to copy in this file the code that you
+type in the interactive shell between the lines "******* answer x.x" and
+"******* end answer x.x".  Do not modify or remove these two lines (they
+are used to automatically extract your answers).
+********************************************************************************
+
+
+********************************************************************************
+******************  Part II
+********************************************************************************
+
+For these questions, you will need the following operations on RDD
+(see the documentations on RDD, the links are in instructions.pdf).
+- map
+- flatmap
+- reduceByKey
+- filter
+- take
+- collect
+- sortBy
+
+The file products.txt  contains a list of products.
+Each line of this file is:
+TID product_name price category
+
+1) Generate a RDD named "prod" of tuples (tid, name, price, category) from this text file.
+   The "tid" should be an integer and price a float. You can use the function int() to convert a string to an integer (e.g., int("12") is 12) and float() to convert to a float and split() to split on blanks.
+   This RDD will contain tuples like (1, "apple", 3.3, "fruit") ...
+******* answer 2.1: do not modify or remove this line
+   import os
+
+   products_file = os.path.join('data', 'products.txt')
+   prod_raw = sc.textFile(products_file).cache()
+   prod_raw.take(3)
+   def format(line):
+       line = line.split('\t')
+       line[0] = int(line[0])
+       line[2] = float(line[2])
+       return line
+
+   prod = prod_raw.map(format)
+
+   prod.collect()
+******* end answer 2.1: do not modify or remove this line
+
+This "product" RDD will be the input RDD for all the following questions.
+
+2) Generate a RDD "prod20" with all products with price > 20.
+******* answer 2.2
+   prod20 = prod.filter(lambda x: x[2]>20)
+   prod20.collect()
+******* end answer 2.2
+
+3) Sort the RDD of previous question by ascending prices. You can use the sortBy() transformation. The parameter of sortBy() is a function used to sort the RDD. For instance, if rdd contains tuples t=(t[0], t[1],...),
+rdd.sortBy(lambda t: t[1]) will sort according to the ascending value of t[1] while
+rdd.sortBy(lambda t: t[1]+t[2], ascending=False) will sort according to the descending value of t[1]+t[2].
+******* answer 2.3
+   prod20.sortBy(lambda t: t[2])
+   prod20.collect()
+******* end answer 2.3
+
+
+4) Generate a RDD "maxpricebycat" with the maximum price for each category of product.
+The result RDD will contain pairs like ("film", 42.9); ("beverage",15.0)...
+******* answer 2.4
+   prod_by_category = prod.map(lambda x: (x[3], (x[0], x[1], x[2])))
+
+   maxpricebycat = prod_by_category.reduceByKey(lambda a,b: a if (a[2]>b[2]) else b)
+   maxpricebycat.collect()
+******* end answer 2.4
+
+
+5) Generate a RDD "countbycat" with the number of products in each category
+******* answer 2.5
+   countbycat = prod_by_category.map(lambda x: (x[0], 1))
+   countbycat = countbycat.reduceByKey(lambda a,b: a+b)
+   countbycat.collect()
+******* end answer 2.5
+
+We want a RDD with the average price of products in each category (eg, ("fruit", 7.63) ...)
+You will do it first in a wrong way using a reduce function avg() which is not associative :
+def avg(a,b):
+   return 0.5*(a+b)
+6) Generate (an incorrect) RDD using this "avg" function for the reduce. Check that the result are actually incorrect.
+******* answer 2.6
+   def avg(a,b):
+      return 0.5*(a+b)
+
+   wrong_avg = prod_by_category.map(lambda x: (x[0], x[1][2]))
+   wrong_avg = wrong_avg.reduceByKey(avg)
+
+   wrong_avg.collect()
+******* end answer 2.6
+
+7) Before doing the reduce with "avg" in the previous function, sort the RDD by increasing prices using sortby()
+   Check that the results are still incorrect and different from those of question 5.
+   Do the same by sorting by decreasing prices, and check the results are again different from the two previous ones.
+******* answer 2.7
+   wrong_avg_sorted = prod_by_category.map(lambda x: (x[0], x[1][2])).sortBy(lambda t: t[1])
+   wrong_avg_sorted = wrong_avg_sorted.reduceByKey(avg)
+
+   wrong_avg_sorted.collect()
+******* end answer 2.7
+
+
+So, as we have seen in course, using a non-associative function gives
+incorrect results and the results depends on the order of the elements
+in the RDD.
+
+8) Generate a RDD "avg_price" with the (correct) average price of products in each category.
+As in the course, you can for instance fist compute a rdd of (category, (sum_of_price, nb_of_product))
+and then compute the average.
+******* answer 2.8
+   totals = prod_by_category.map(lambda x: (x[0], (x[1][2], 1)))
+   totals = totals.reduceByKey(lambda a,b: (a[0]+b[0], a[1]+b[1]))
+
+   avg_price = totals.map(lambda x: (x[0], x[1][0]/x[1][1]))
+
+   avg_price.collect()
+******* end answer 2.8
+
